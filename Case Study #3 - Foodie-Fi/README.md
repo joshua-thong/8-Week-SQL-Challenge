@@ -46,14 +46,6 @@ When customers churn, they will keep their access until the end of their current
 
 ***
 
-## Question and Solution
-
-Please join me in executing the queries using PostgreSQL on [DB Fiddle](https://www.db-fiddle.com/f/rHJhRrXy5hbVBNJ6F6b9gJ/16). It would be great to work together on the questions!
-
-Additionally, I have also published this case study on [Medium](https://medium.com/analytics-vidhya/8-week-sql-challenge-case-study-3-foodie-fi-3d8497376ea9?sk=579afc01c30aa6149d85050f8a46ddef).
-
-If you have any questions, reach out to me on [LinkedIn](https://www.linkedin.com/in/katiehuangx/).
-
 ## 🎞️ A. Customer Journey
 
 Based off the 8 sample customers provided in the sample subscriptions table below, write a brief description about each customer’s onboarding journey.
@@ -64,37 +56,80 @@ Based off the 8 sample customers provided in the sample subscriptions table belo
 
 **Answer:**
 
+**Query #1**
+
 ```sql
 SELECT
-  sub.customer_id,
-  plans.plan_id, 
-  plans.plan_name,  
-  sub.start_date
-FROM foodie_fi.plans
-JOIN foodie_fi.subscriptions AS sub
-  ON plans.plan_id = sub.plan_id
-WHERE sub.customer_id IN (1,2,11,13,15,16,18,19);
+ s.customer_id,
+ p.*,
+ s.start_date
+ FROM plans p JOIN subscriptions s
+ ON p.plan_id = s.plan_id
+ WHERE s.customer_id BETWEEN 1 AND 19
+ ORDER BY s.customer_id, p.plan_id;
 ```
 
-<img width="556" alt="image" src="https://user-images.githubusercontent.com/81607668/129758340-b7cd527c-31f3-4f33-8d99-5b0a4baab378.png">
+| customer_id | plan_id | plan_name     | price  | start_date |
+| ----------- | ------- | ------------- | ------ | ---------- |
+| 1           | 0       | trial         | 0.00   | 2020-08-01 |
+| 1           | 1       | basic monthly | 9.90   | 2020-08-08 |
+| 2           | 0       | trial         | 0.00   | 2020-09-20 |
+| 2           | 3       | pro annual    | 199.00 | 2020-09-27 |
+| 3           | 0       | trial         | 0.00   | 2020-01-13 |
+| 3           | 1       | basic monthly | 9.90   | 2020-01-20 |
+| 4           | 0       | trial         | 0.00   | 2020-01-17 |
+| 4           | 1       | basic monthly | 9.90   | 2020-01-24 |
+| 4           | 4       | churn         |        | 2020-04-21 |
+| 5           | 0       | trial         | 0.00   | 2020-08-03 |
+| 5           | 1       | basic monthly | 9.90   | 2020-08-10 |
+| 6           | 0       | trial         | 0.00   | 2020-12-23 |
+| 6           | 1       | basic monthly | 9.90   | 2020-12-30 |
+| 6           | 4       | churn         |        | 2021-02-26 |
+| 7           | 0       | trial         | 0.00   | 2020-02-05 |
+| 7           | 1       | basic monthly | 9.90   | 2020-02-12 |
+| 7           | 2       | pro monthly   | 19.90  | 2020-05-22 |
+| 8           | 0       | trial         | 0.00   | 2020-06-11 |
+| 8           | 1       | basic monthly | 9.90   | 2020-06-18 |
+| 8           | 2       | pro monthly   | 19.90  | 2020-08-03 |
+| 9           | 0       | trial         | 0.00   | 2020-12-07 |
+| 9           | 3       | pro annual    | 199.00 | 2020-12-14 |
+| 10          | 0       | trial         | 0.00   | 2020-09-19 |
+| 10          | 2       | pro monthly   | 19.90  | 2020-09-26 |
+| 11          | 0       | trial         | 0.00   | 2020-11-19 |
+| 11          | 4       | churn         |        | 2020-11-26 |
+| 12          | 0       | trial         | 0.00   | 2020-09-22 |
+| 12          | 1       | basic monthly | 9.90   | 2020-09-29 |
+| 13          | 0       | trial         | 0.00   | 2020-12-15 |
+| 13          | 1       | basic monthly | 9.90   | 2020-12-22 |
+| 13          | 2       | pro monthly   | 19.90  | 2021-03-29 |
+| 14          | 0       | trial         | 0.00   | 2020-09-22 |
+| 14          | 1       | basic monthly | 9.90   | 2020-09-29 |
+| 15          | 0       | trial         | 0.00   | 2020-03-17 |
+| 15          | 2       | pro monthly   | 19.90  | 2020-03-24 |
+| 15          | 4       | churn         |        | 2020-04-29 |
+| 16          | 0       | trial         | 0.00   | 2020-05-31 |
+| 16          | 1       | basic monthly | 9.90   | 2020-06-07 |
+| 16          | 3       | pro annual    | 199.00 | 2020-10-21 |
+| 17          | 0       | trial         | 0.00   | 2020-07-27 |
+| 17          | 1       | basic monthly | 9.90   | 2020-08-03 |
+| 17          | 3       | pro annual    | 199.00 | 2020-12-11 |
+| 18          | 0       | trial         | 0.00   | 2020-07-06 |
+| 18          | 2       | pro monthly   | 19.90  | 2020-07-13 |
+| 19          | 0       | trial         | 0.00   | 2020-06-22 |
+| 19          | 2       | pro monthly   | 19.90  | 2020-06-29 |
+| 19          | 3       | pro annual    | 199.00 | 2020-08-29 |
 
-Based on the results above, I have selected three customers to focus on and will now share their onboarding journey.
+A. Customer Journey
+Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey.
 
-_(Refer to the table below)_
+customer 3 is the first onboarding in year 2020 and upgrade to basic monthly plan on 2020-01-20.
+(Question : Why are the customer_id values not assigned in chronological order? For example, Customer 3 joined in January 2020, while Customer 1 joined in August 2020.)
 
-Customer 1: This customer initiated their journey by starting the free trial on 1 Aug 2020. After the trial period ended, on 8 Aug 2020, they subscribed to the basic monthly plan.
+customer 6 start its free trial on 2020-12-23 and subs 10 month of basic monthly plan afterwards.
 
-<img width="560" alt="image" src="https://user-images.githubusercontent.com/81607668/129757897-df606bb6-aeb8-4235-8244-d61a3952a84a.png">
+customer 2 and 9 upgrade to pro plan after the trial ends.
 
-Customer 13: The onboarding journey for this customer began with a free trial on 15 Dec 2020. Following the trial period, on 22 Dec 2020, they subscribed to the basic monthly plan. After three months, on 29 Mar 2021, they upgraded to the pro monthly plan.
 
-<img width="512" alt="image" src="https://user-images.githubusercontent.com/81607668/129761134-7fa840f5-673e-4ec6-8831-e3971c1fcd50.png">
-
-Customer 15: Initially, this customer commenced their onboarding journey with a free trial on 17 Mar 2020. Once the trial ended, on 24 Mar 2020, they upgraded to the pro monthly plan. However, the following month, on 29 Apr 2020, the customer decided to terminate their subscription and subsequently churned until the paid subscription ends. 
-
-<img width="549" alt="image" src="https://user-images.githubusercontent.com/81607668/129761434-39009802-c813-437d-a292-ddd26ac8ac29.png">
-
-***
 
 ## B. Data Analysis Questions
 
