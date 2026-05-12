@@ -138,15 +138,15 @@ customer 2 and 9 upgrade to pro plan after the trial ends.
 To determine the count of unique customers for Foodie-Fi, I utilize the `COUNT()` function wrapped around `DISTINCT`.
 
 ```sql
-SELECT COUNT(DISTINCT customer_id) AS num_of_customers
-FROM foodie_fi.subscriptions;
+SELECT 
+ COUNT(DISTINCT customer_id) AS unique_customer_id
+ FROM subscriptions;
 ```
 
 **Answer:**
 
-<img width="159" alt="image" src="https://user-images.githubusercontent.com/81607668/129764903-bb0480aa-bf92-46f7-b0e1-f4d0f9e96ae1.png">
+<img width="338" height="123" alt="image" src="https://github.com/user-attachments/assets/28f9a0bf-965b-4660-894a-c78eed36f07a" />
 
-- Foodie-Fi has 1,000 unique customers.
 
 ### 2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value
 
@@ -492,29 +492,29 @@ ORDER BY avg_days_to_upgrade;
 ### 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 
 ```sql
-WITH ranked_cte AS (
-  SELECT 
-    sub.customer_id,  
-  	plans.plan_id,
-    plans.plan_name, 
-	  LEAD(plans.plan_id) OVER ( 
-      PARTITION BY sub.customer_id
-      ORDER BY sub.start_date) AS next_plan_id
-  FROM foodie_fi.subscriptions AS sub
-  JOIN foodie_fi.plans 
-    ON sub.plan_id = plans.plan_id
- WHERE DATE_PART('year', start_date) = 2020
+WITH downgrade_cte AS (
+SELECT
+ s.customer_id,
+ s.plan_id,
+ s.start_date,
+ LAG(s.plan_id) OVER(
+   PARTITION BY s.customer_id ORDER BY s.start_date
+   ) AS previous_plan
+   FROM subscriptions s JOIN plans p
+   ON s.plan_id = p.plan_id
 )
-  
-SELECT 
-  COUNT(customer_id) AS churned_customers
-FROM ranked_cte
-WHERE plan_id = 2
-  AND next_plan_id = 1;
+SELECT
+ COUNT(DISTINCT customer_id) AS downgrade_customer
+ FROM downgrade_cte
+ WHERE EXTRACT(YEAR FROM start_date) = 2020
+ AND previous_plan = 2
+ AND plan_id = 1
+   ;
 ```
 
 **Answer:**
 
-In 2020, there were no instances where customers downgraded from a pro monthly plan to a basic monthly plan.
+<img width="353" height="143" alt="image" src="https://github.com/user-attachments/assets/f8fab8c8-2fce-4b17-93f3-6537d079ea1b" />
+
 
 ***
